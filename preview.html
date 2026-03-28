@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EHU Hockey Champions League</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg2:#0f1c31;
+      --card:#0d1730cc;
+      --line:#2b3f68;
+      --text:#eef4ff;
+      --muted:#a6b5d4;
+      --gold:#d8b35e;
+      --ice:#9fd2ff;
+      --accent:#4da3ff;
+      --danger:#ff7c7c;
+      --success:#6ee7a2;
+      --shadow:0 16px 42px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(77,163,255,.18), transparent 30%),
+        linear-gradient(180deg, #06101d, #0c1730 40%, #08111f 100%);
+      color:var(--text);
+    }
+    .container{max-width:1400px;margin:0 auto;padding:24px}
+    .hero{
+      border:1px solid rgba(255,255,255,.09);
+      background:
+        linear-gradient(135deg, rgba(216,179,94,.15), rgba(77,163,255,.12)),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:32px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -80px -80px auto;
+      width:280px;height:280px;border-radius:50%;
+      background:radial-gradient(circle, rgba(216,179,94,.18), transparent 65%);
+      filter:blur(10px);
+    }
+    h1{margin:0 0 8px;font-size:clamp(2rem,4vw,4rem);letter-spacing:.04em}
+    h2{margin:0 0 16px;font-size:1.6rem}
+    h3{margin:0 0 12px;font-size:1.1rem}
+    p{color:var(--muted);line-height:1.55}
+    .pillbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .pill{
+      padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);color:var(--text);font-size:.92rem
+    }
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:1.2fr .8fr}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .section{margin-top:24px}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    button,.btn{
+      border:none;border-radius:14px;padding:12px 16px;font-weight:700;
+      background:linear-gradient(180deg, #66b6ff, #357fe2);color:white;cursor:pointer;
+      box-shadow:0 10px 22px rgba(53,127,226,.28);
+    }
+    button.secondary{
+      background:linear-gradient(180deg, #24344f, #18263f);
+      box-shadow:none;border:1px solid rgba(255,255,255,.09)
+    }
+    button.warning{
+      background:linear-gradient(180deg, #ef9b6b, #d56b3c);
+    }
+    input, select, textarea{
+      background:#081124;border:1px solid var(--line);color:var(--text);
+      border-radius:12px;padding:10px 12px;min-height:42px;outline:none;width:100%;
+    }
+    label{display:block;font-size:.88rem;color:var(--muted);margin-bottom:8px}
+    .teams-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px
+    }
+    .team-card{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;padding:14px;
+    }
+    .team-top{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+    .logo-wrap{
+      width:62px;height:62px;border-radius:16px;border:1px dashed rgba(255,255,255,.2);
+      background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;
+      overflow:hidden;flex-shrink:0;
+    }
+    .logo-wrap img{width:100%;height:100%;object-fit:cover}
+    .mini{font-size:.82rem;color:var(--muted)}
+    .team-fields{display:grid;gap:8px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:.93rem}
+    th{color:#d4e5ff;font-weight:800}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .badge{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:28px;height:28px;border-radius:999px;padding:0 10px;
+      background:rgba(216,179,94,.18);color:#ffe8b0;font-weight:800;font-size:.8rem
+    }
+    .subtle{color:var(--muted)}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .stat{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;padding:16px;background:rgba(255,255,255,.03)
+    }
+    .stat .value{font-size:2rem;font-weight:900;margin-top:4px}
+    .bracket-shell{
+      display:grid;grid-template-columns:1fr 180px 1fr;gap:18px;align-items:start;
+    }
+    .bracket-side{display:grid;gap:14px}
+    .round-title{
+      font-size:.82rem;color:var(--ice);text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px
+    }
+    .match{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:16px;padding:10px 12px;
+    }
+    .entry{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 0;
+    }
+    .entry + .entry{border-top:1px solid rgba(255,255,255,.06)}
+    .entry strong{font-size:.92rem}
+    .winner{color:var(--success)}
+    .trophy{
+      position:sticky; top:24px;
+      background:linear-gradient(180deg, rgba(216,179,94,.18), rgba(255,255,255,.03));
+      border:1px solid rgba(216,179,94,.35);
+      border-radius:28px; padding:20px; text-align:center;
+      box-shadow:var(--shadow)
+    }
+    .trophy .icon{font-size:4rem}
+    .muteblock{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;padding:14px
+    }
+    .footer{padding:40px 0 20px;text-align:center;color:var(--muted)}
+    .kpi{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px
+    }
+    .kpi .box{
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;padding:14px
+    }
+    .smallcaps{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ice)}
+    .scroll{overflow:auto}
+    @media (max-width: 1100px){
+      .grid-2{grid-template-columns:1fr}
+      .bracket-shell{grid-template-columns:1fr}
+      .trophy{position:relative;top:auto;order:-1}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="smallcaps">International Club Hockey</div>
+      <h1>EHU Hockey Champions League</h1>
+      <p>
+        Build your clubs, upload logos, simulate the 36-team league phase, and run a full knockout bracket
+        with left-right presentation, final host city, top scorers, upsets, and Player of the Tournament.
+      </p>
+      <div class="pillbar">
+        <div class="pill">36 Clubs</div>
+        <div class="pill">8 League Matches Each</div>
+        <div class="pill">Top 8 Auto-Qualify</div>
+        <div class="pill">9th–24th Playoffs</div>
+        <div class="pill">Two-Legged Knockouts</div>
+        <div class="pill">Neutral Final</div>
+      </div>
+      <div class="kpi">
+        <div class="box"><div class="smallcaps">Season</div><div id="seasonKpi" class="value">2068</div></div>
+        <div class="box"><div class="smallcaps">Final Host</div><div id="hostKpi" class="value" style="font-size:1.2rem;font-weight:800">London</div></div>
+        <div class="box"><div class="smallcaps">Champion</div><div id="championKpi" class="value" style="font-size:1.2rem;font-weight:800">—</div></div>
+        <div class="box"><div class="smallcaps">Top Scorer</div><div id="scorerKpi" class="value" style="font-size:1.2rem;font-weight:800">—</div></div>
+      </div>
+    </section>
+
+    <section class="section grid grid-2">
+      <div class="card">
+        <h2>Competition Controls</h2>
+        <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+          <div>
+            <label>Season</label>
+            <input id="seasonInput" type="number" value="2068" />
+          </div>
+          <div>
+            <label>Final Host City</label>
+            <input id="hostInput" type="text" value="London" />
+          </div>
+          <div>
+            <label>Random Seed</label>
+            <input id="seedInput" type="number" value="42" />
+          </div>
+          <div>
+            <label>Home Ice Edge</label>
+            <input id="homeEdgeInput" type="number" value="4" />
+          </div>
+        </div>
+        <div class="controls" style="margin-top:16px">
+          <button id="loadDefaultsBtn">Load Default Clubs</button>
+          <button id="simulateLeagueBtn">Simulate League Phase</button>
+          <button id="simulateKnockoutBtn">Simulate Full Knockout</button>
+          <button id="saveBtn" class="secondary">Save To Browser</button>
+          <button id="resetBtn" class="warning">Reset</button>
+        </div>
+        <p class="mini" style="margin-top:14px">
+          Tip: edit club names, league, and rating below. Higher ratings win more often. Logo uploads stay in your browser session.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Format Snapshot</h2>
+        <div class="muteblock">
+          <p style="margin-top:0"><strong>League Phase:</strong> 36 clubs in one table, 8 matches each, 4 home and 4 away.</p>
+          <p><strong>Qualification:</strong> Top 8 go straight to the Round of 16. Clubs 9–24 enter the playoff round. Clubs 25–36 are out.</p>
+          <p><strong>Knockouts:</strong> Two-legged ties through semifinals. Final is one match at a neutral venue.</p>
+          <p style="margin-bottom:0"><strong>Tiebreakers:</strong> Aggregate tie → sudden-death overtime periods → best-of-5 shootout.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <h2>Club Setup</h2>
+          <p class="subtle">Upload logos and edit every club before you simulate.</p>
+        </div>
+        <div class="controls">
+          <button id="addClubBtn" class="secondary">Add Club</button>
+          <button id="trimClubsBtn" class="secondary">Trim to 36</button>
+        </div>
+      </div>
+      <div id="teamsGrid" class="teams-grid"></div>
+    </section>
+
+    <section class="section grid grid-3">
+      <div class="card" style="grid-column:span 2">
+        <h2>League Table</h2>
+        <div class="scroll">
+          <table id="leagueTable">
+            <thead>
+              <tr>
+                <th>#</th><th>Club</th><th>League</th><th>Pts</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Highlights</h2>
+        <div id="highlights" class="muteblock">
+          <p style="margin:0">No simulation yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid grid-2">
+      <div class="card">
+        <h2>Top Goal Stats</h2>
+        <div class="scroll">
+          <table id="scorersTable">
+            <thead>
+              <tr><th>#</th><th>Player</th><th>Club</th><th>Goals</th><th>Assists</th><th>Points</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Awards & Storylines</h2>
+        <div class="stats-grid">
+          <div class="stat"><div class="smallcaps">Player of the Tournament</div><div id="potName" class="value" style="font-size:1.25rem">—</div><div id="potClub" class="subtle">—</div></div>
+          <div class="stat"><div class="smallcaps">Biggest Upset</div><div id="upsetName" class="value" style="font-size:1.1rem">—</div><div id="upsetMeta" class="subtle">—</div></div>
+          <div class="stat"><div class="smallcaps">Champion</div><div id="championName" class="value" style="font-size:1.25rem">—</div><div id="finalMeta" class="subtle">—</div></div>
+          <div class="stat"><div class="smallcaps">Best Attack</div><div id="bestAttack" class="value" style="font-size:1.25rem">—</div><div id="bestAttackMeta" class="subtle">—</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <h2>Knockout Bracket</h2>
+      <p class="subtle">Left and right bracket layout with a center trophy card and final details.</p>
+      <div class="bracket-shell">
+        <div id="bracketLeft" class="bracket-side"></div>
+        <div class="trophy">
+          <div class="icon">🏆</div>
+          <h3>HCL Final</h3>
+          <div class="smallcaps">Host City</div>
+          <div id="finalHostCard" style="font-size:1.3rem;font-weight:900;margin-top:4px">London</div>
+          <div class="smallcaps" style="margin-top:14px">Winner</div>
+          <div id="finalWinnerCard" style="font-size:1.2rem;font-weight:800;margin-top:4px">—</div>
+          <div id="finalScoreCard" class="subtle" style="margin-top:8px">Simulate the knockout to populate the final.</div>
+        </div>
+        <div id="bracketRight" class="bracket-side"></div>
+      </div>
+    </section>
+
+    <section class="footer">
+      EHU Hockey Champions League simulator page • Single-file HTML app
+    </section>
+  </div>
+
+  <script>
+    const defaultClubs = [
+      ["Chicago Ramparts","HPL",92],["Long Island Cannons","HPL",90],["NYC Patriots","HPL",89],["Toronto Blazers","HPL",88],
+      ["Farjestad BK","SHL",87],["Dynamo Frolunda","SHL",85],["Malmo HC","SHL",84],["Uppsala Kings","SHL",82],
+      ["Tappara","FEL",90],["Jokerit","FEL",89],["Turku Titans","FEL",84],["Oulu Blaze","FEL",82],
+      ["Manchester Saints","EPL",88],["London Cannons","EPL",86],["Coventry Eagles","EPL",83],["Plymouth Pilots","EPL",81],
+      ["HC Milano","HSA",87],["Torino Bulls","HSA",84],["Roma Gladiatori","HSA",82],["Venezia Sharks","HSA",80],
+      ["Eisbaren Berlin","DEL",84],["Munich Iron","DEL",82],
+      ["Madrid Toros","SLH",81],["Barcelona Guardians","SLH",80],
+      ["HC Davos","NL",86],["SC Bern","NL",84],
+      ["Paris Royale","FHL",81],["Lyon Forge","FHL",79],
+      ["Prague Lions","RHE",83],["Brno Stags","RHE",80],
+      ["Amsterdam Blades","HH",80],["Rotterdam Penguins","HH",79],
+      ["Oslo Northmen","NHA",78],
+      ["Braga Crown","LH",76],
+      ["Warsaw Vipers","PHL",77],
+      ["Brussels Royals","RHL",76]
+    ];
+
+    let state = {
+      clubs: [],
+      leagueTable: [],
+      matches: [],
+      playoffRound: [],
+      roundOf16: [],
+      quarterfinals: [],
+      semifinals: [],
+      final: null,
+      scorers: [],
+      playerOfTournament: null,
+      biggestUpset: null,
+      champion: null
+    };
+
+    function mulberry32(a){
+      return function() {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      }
+    }
+
+    function clubId() {
+      return Math.random().toString(36).slice(2, 11);
+    }
+
+    function makeClub(name="",league="HCL",rating=78,logo=""){
+      return { id: clubId(), name, league, rating, logo };
+    }
+
+    function loadDefaults(){
+      state.clubs = defaultClubs.map(c => makeClub(c[0], c[1], c[2], ""));
+      renderTeams();
+      renderAll();
+    }
+
+    function resetAll(){
+      localStorage.removeItem("hcl_state_v1");
+      loadDefaults();
+      state.leagueTable = [];
+      state.matches = [];
+      state.playoffRound = [];
+      state.roundOf16 = [];
+      state.quarterfinals = [];
+      state.semifinals = [];
+      state.final = null;
+      state.scorers = [];
+      state.playerOfTournament = null;
+      state.biggestUpset = null;
+      state.champion = null;
+      renderAll();
+    }
+
+    function saveState(){
+      const payload = {
+        ...state,
+        season: document.getElementById("seasonInput").value,
+        host: document.getElementById("hostInput").value,
+        seed: document.getElementById("seedInput").value,
+        homeEdge: document.getElementById("homeEdgeInput").value
+      };
+      localStorage.setItem("hcl_state_v1", JSON.stringify(payload));
+      alert("Saved in your browser.");
+    }
+
+    function loadSavedState(){
+      const raw = localStorage.getItem("hcl_state_v1");
+      if(!raw){
+        loadDefaults();
+        return;
+      }
+      const payload = JSON.parse(raw);
+      Object.assign(state, payload);
+      document.getElementById("seasonInput").value = payload.season || 2068;
+      document.getElementById("hostInput").value = payload.host || "London";
+      document.getElementById("seedInput").value = payload.seed || 42;
+      document.getElementById("homeEdgeInput").value = payload.homeEdge || 4;
+      if(!state.clubs?.length) loadDefaults();
+      renderTeams();
+      renderAll();
+    }
+
+    function renderTeams(){
+      const wrap = document.getElementById("teamsGrid");
+      wrap.innerHTML = "";
+      state.clubs.forEach((club, idx) => {
+        const el = document.createElement("div");
+        el.className = "team-card";
+        el.innerHTML = `
+          <div class="team-top">
+            <div class="logo-wrap">${club.logo ? `<img src="${club.logo}" alt="${escapeHtml(club.name)}" />` : `<span class="mini">Logo</span>`}</div>
+            <div>
+              <div class="badge">${idx+1}</div>
+              <div class="mini" style="margin-top:6px">Club Slot</div>
+            </div>
+          </div>
+          <div class="team-fields">
+            <div>
+              <label>Club Name</label>
+              <input data-field="name" data-id="${club.id}" value="${escapeAttr(club.name)}" />
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 110px;gap:8px">
+              <div>
+                <label>League</label>
+                <input data-field="league" data-id="${club.id}" value="${escapeAttr(club.league)}" />
+              </div>
+              <div>
+                <label>Rating</label>
+                <input type="number" min="50" max="99" data-field="rating" data-id="${club.id}" value="${club.rating}" />
+              </div>
+            </div>
+            <div>
+              <label>Upload Logo</label>
+              <input type="file" accept="image/*" data-field="logo" data-id="${club.id}" />
+            </div>
+            <button class="secondary" data-action="remove" data-id="${club.id}">Remove</button>
+          </div>
+        `;
+        wrap.appendChild(el);
+      });
+
+      wrap.querySelectorAll("input[data-field='name'], input[data-field='league'], input[data-field='rating']").forEach(input=>{
+        input.addEventListener("input", e => {
+          const club = state.clubs.find(c=>c.id===e.target.dataset.id);
+          if(!club) return;
+          const field = e.target.dataset.field;
+          club[field] = field === "rating" ? Number(e.target.value || 75) : e.target.value;
+          renderAll();
+        });
+      });
+
+      wrap.querySelectorAll("input[data-field='logo']").forEach(input=>{
+        input.addEventListener("change", e => {
+          const file = e.target.files?.[0];
+          const club = state.clubs.find(c=>c.id===e.target.dataset.id);
+          if(!file || !club) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            club.logo = reader.result;
+            renderTeams();
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      wrap.querySelectorAll("button[data-action='remove']").forEach(btn=>{
+        btn.addEventListener("click", e => {
+          const id = e.target.dataset.id;
+          state.clubs = state.clubs.filter(c=>c.id!==id);
+          renderTeams();
+          renderAll();
+        });
+      });
+    }
+
+    function addClub(){
+      state.clubs.push(makeClub("New Club", "League", 75, ""));
+      renderTeams();
+      renderAll();
+    }
+
+    function trimClubs(){
+      state.clubs = state.clubs.slice(0,36);
+      renderTeams();
+      renderAll();
+    }
+
+    function simulateLeaguePhase(){
+      if(state.clubs.length < 36){
+        alert("You need at least 36 clubs to simulate the HCL.");
+        return;
+      }
+      const clubs = state.clubs.slice(0,36);
+      const seed = Number(document.getElementById("seedInput").value || 42);
+      const homeEdge = Number(document.getElementById("homeEdgeInput").value || 4);
+      const rng = mulberry32(seed);
+
+      const table = clubs.map(c => ({
+        id:c.id, name:c.name, league:c.league, rating:c.rating, logo:c.logo,
+        pts:0, gp:0, w:0, d:0, l:0, gf:0, ga:0, gd:0
+      }));
+
+      const tableMap = new Map(table.map(t => [t.id, t]));
+
+      const buckets = splitIntoPots([...clubs].sort((a,b)=>b.rating-a.rating), 4);
+      const schedule = [];
+
+      for(const club of clubs){
+        const opponents = pickOpponents(club, clubs, buckets, schedule, rng);
+        const homeOpps = opponents.slice(0,4);
+        const awayOpps = opponents.slice(4,8);
+
+        homeOpps.forEach(o => {
+          if(!hasFixture(schedule, club.id, o.id)){
+            schedule.push(simulateMatch(club, o, rng, homeEdge, "league"));
+          }
+        });
+        awayOpps.forEach(o => {
+          if(!hasFixture(schedule, o.id, club.id)){
+            schedule.push(simulateMatch(o, club, rng, homeEdge, "league"));
+          }
+        });
+      }
+
+      for(const m of schedule){
+        applyResult(tableMap.get(m.homeId), tableMap.get(m.awayId), m.homeGoals, m.awayGoals);
+      }
+
+      table.forEach(t => t.gd = t.gf - t.ga);
+      table.sort((a,b)=>
+        b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || b.rating-a.rating || a.name.localeCompare(b.name)
+      );
+
+      state.matches = schedule;
+      state.leagueTable = table;
+      generateScorers();
+      state.biggestUpset = computeBiggestUpset(schedule);
+      renderAll();
+    }
+
+    function splitIntoPots(sorted, pots){
+      const size = Math.ceil(sorted.length / pots);
+      let out = [];
+      for(let i=0;i<pots;i++) out.push(sorted.slice(i*size, i*size+size));
+      return out;
+    }
+
+    function pickOpponents(club, clubs, buckets, schedule, rng){
+      const myBucketIndex = buckets.findIndex(bucket => bucket.some(x => x.id === club.id));
+      const picks = [];
+      const pool = clubs.filter(c => c.id !== club.id);
+
+      // 2 same pot, 2 nearby pot, 4 random from others
+      const samePot = shuffle(buckets[myBucketIndex].filter(c=>c.id!==club.id), rng).slice(0,2);
+      picks.push(...samePot);
+
+      const adjacent = []
+        .concat(buckets[myBucketIndex-1] || [])
+        .concat(buckets[myBucketIndex+1] || [])
+        .filter(c=>c.id!==club.id);
+      picks.push(...shuffle(adjacent, rng).slice(0,2));
+
+      const used = new Set(picks.map(p=>p.id));
+      const extra = shuffle(pool.filter(c=>!used.has(c.id)), rng).slice(0,4);
+      picks.push(...extra);
+
+      // unique 8
+      return dedupeById(picks).slice(0,8);
+    }
+
+    function dedupeById(arr){
+      const seen = new Set();
+      return arr.filter(x => seen.has(x.id) ? false : seen.add(x.id));
+    }
+
+    function shuffle(arr, rng){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(rng()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    function hasFixture(schedule, homeId, awayId){
+      return schedule.some(m => (m.homeId===homeId && m.awayId===awayId) || (m.homeId===awayId && m.awayId===homeId));
+    }
+
+    function simulateMatch(home, away, rng, homeEdge=4, phase="league"){
+      const ratingDiff = (home.rating + homeEdge) - away.rating;
+      const homeBase = Math.max(0, Math.round(normal(rng, 2.7 + ratingDiff/22, 1.2)));
+      const awayBase = Math.max(0, Math.round(normal(rng, 2.4 - ratingDiff/28, 1.2)));
+      const homeGoals = Math.min(9, homeBase);
+      const awayGoals = Math.min(9, awayBase);
+
+      return {
+        phase,
+        homeId: home.id,
+        awayId: away.id,
+        home: home.name,
+        away: away.name,
+        homeGoals, awayGoals,
+        winnerId: homeGoals>awayGoals ? home.id : awayGoals>homeGoals ? away.id : null,
+        ratingGap: Math.abs(home.rating - away.rating),
+        upsetScore: awayGoals>homeGoals && away.rating + 8 < home.rating ? home.rating-away.rating :
+                    homeGoals>awayGoals && home.rating + 8 < away.rating ? away.rating-home.rating : 0
+      };
+    }
+
+    function normal(rng, mean=0, stdev=1){
+      let u = 1-rng(), v = 1-rng();
+      return mean + Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)*stdev;
+    }
+
+    function applyResult(home, away, hg, ag){
+      home.gp++; away.gp++;
+      home.gf += hg; home.ga += ag;
+      away.gf += ag; away.ga += hg;
+      if(hg>ag){
+        home.w++; away.l++; home.pts += 3;
+      }else if(ag>hg){
+        away.w++; home.l++; away.pts += 3;
+      }else{
+        home.d++; away.d++; home.pts += 1; away.pts += 1;
+      }
+    }
+
+    function generateScorers(){
+      const clubs = state.leagueTable.length ? state.leagueTable : state.clubs;
+      const scorers = [];
+      const first = ["Luca","Niko","Ryan","Alex","Viktor","Mika","Dylan","Marco","Leo","Ivan","Noah","Pavel","Erik","Oscar","Theo","Mateo"];
+      const last = ["Rossi","Lindholm","Petrov","Miller","Kovacs","Mercer","Hayes","Dawson","Virtanen","Berg","Stahl","Costa","Ibrahim","Jensen","Silva","Becker"];
+      clubs.forEach((club, i) => {
+        const playerCount = 3;
+        for(let p=0;p<playerCount;p++){
+          const g = Math.max(0, Math.round((club.gf || Math.max(8, club.rating/8)) * (0.18 - p*0.03) + Math.random()*2));
+          const a = Math.max(g, Math.round(g + Math.random()*5));
+          scorers.push({
+            player: `${first[(i+p)%first.length]} ${last[(i*3+p)%last.length]}`,
+            club: club.name,
+            goals: g,
+            assists: a,
+            points: g+a
+          });
+        }
+      });
+      scorers.sort((a,b)=>b.goals-a.goals || b.points-a.points);
+      state.scorers = scorers.slice(0,18);
+      state.playerOfTournament = scorers.slice().sort((a,b)=>b.points-a.points || b.goals-a.goals)[0] || null;
+    }
+
+    function computeBiggestUpset(matches){
+      if(!matches.length) return null;
+      const upset = matches.slice().sort((a,b)=>b.upsetScore-a.upsetScore)[0];
+      if(!upset || upset.upsetScore <= 0) return null;
+      return upset;
+    }
+
+    function simulateFullKnockout(){
+      if(!state.leagueTable.length){
+        simulateLeaguePhase();
+      }
+      const ordered = state.leagueTable.slice();
+      const top8 = ordered.slice(0,8);
+      const playoffTeams = ordered.slice(8,24);
+      const seed = Number(document.getElementById("seedInput").value || 42) + 1000;
+      const homeEdge = Number(document.getElementById("homeEdgeInput").value || 4);
+      const rng = mulberry32(seed);
+
+      // 9v24, 10v23 ...
+      state.playoffRound = [];
+      let playoffWinners = [];
+      for(let i=0;i<8;i++){
+        const a = playoffTeams[i];
+        const b = playoffTeams[15-i];
+        const tie = simulateTwoLegTie(a,b,rng,homeEdge,"Playoff Round");
+        state.playoffRound.push(tie);
+        playoffWinners.push(tie.winner);
+      }
+
+      // Top 8 pair against playoff winners in bracket order
+      state.roundOf16 = [];
+      const r16Pairs = [
+        [top8[0], playoffWinners[7]],[top8[3], playoffWinners[4]],[top8[2], playoffWinners[5]],[top8[1], playoffWinners[6]],
+        [top8[7], playoffWinners[0]],[top8[4], playoffWinners[3]],[top8[5], playoffWinners[2]],[top8[6], playoffWinners[1]]
+      ];
+      let r16Winners = [];
+      for(const pair of r16Pairs){
+        const tie = simulateTwoLegTie(pair[0], pair[1], rng, homeEdge, "Round of 16");
+        state.roundOf16.push(tie);
+        r16Winners.push(tie.winner);
+      }
+
+      state.quarterfinals = [];
+      let qfWinners = [];
+      for(let i=0;i<4;i++){
+        const tie = simulateTwoLegTie(r16Winners[i*2], r16Winners[i*2+1], rng, homeEdge, "Quarterfinal");
+        state.quarterfinals.push(tie);
+        qfWinners.push(tie.winner);
+      }
+
+      state.semifinals = [];
+      let sfWinners = [];
+      for(let i=0;i<2;i++){
+        const tie = simulateTwoLegTie(qfWinners[i*2], qfWinners[i*2+1], rng, homeEdge, "Semifinal");
+        state.semifinals.push(tie);
+        sfWinners.push(tie.winner);
+      }
+
+      state.final = simulateFinal(sfWinners[0], sfWinners[1], rng, homeEdge, document.getElementById("hostInput").value.trim() || "Neutral Venue");
+      state.champion = state.final.winner;
+      renderAll();
+    }
+
+    function simulateTwoLegTie(a,b,rng,homeEdge,label){
+      const leg1 = simulateMatch(a,b,rng,homeEdge,label);
+      const leg2 = simulateMatch(b,a,rng,homeEdge,label);
+      let aggA = leg1.homeGoals + leg2.awayGoals;
+      let aggB = leg1.awayGoals + leg2.homeGoals;
+      let note = "";
+      let winner = null;
+
+      if(aggA === aggB){
+        const otChance = rng();
+        if(otChance < .65){
+          winner = rng() < ((a.rating)/(a.rating+b.rating)) ? a : b;
+          note = "Won in overtime";
+        }else{
+          winner = rng() < ((a.rating+2)/(a.rating+b.rating+4)) ? a : b;
+          note = "Won on penalties";
+        }
+      }else{
+        winner = aggA > aggB ? a : b;
+      }
+
+      return { label, teamA:a, teamB:b, leg1, leg2, aggA, aggB, winner, note };
+    }
+
+    function simulateFinal(a,b,rng,homeEdge,host){
+      const m = simulateMatch(a,b,rng,0,"Final");
+      let note = "";
+      let winner = null;
+      if(m.homeGoals === m.awayGoals){
+        if(rng() < .6){
+          winner = rng() < (a.rating/(a.rating+b.rating)) ? a : b;
+          note = "Won in overtime";
+        }else{
+          winner = rng() < ((a.rating+2)/(a.rating+b.rating+4)) ? a : b;
+          note = "Won on penalties";
+        }
+      }else{
+        winner = m.homeGoals > m.awayGoals ? a : b;
+      }
+      return { teamA:a, teamB:b, match:m, winner, note, host };
+    }
+
+    function renderLeagueTable(){
+      const tbody = document.querySelector("#leagueTable tbody");
+      tbody.innerHTML = "";
+      state.leagueTable.forEach((t, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td><strong>${escapeHtml(t.name)}</strong></td>
+          <td>${escapeHtml(t.league)}</td>
+          <td>${t.pts}</td>
+          <td>${t.gp}</td>
+          <td>${t.w}</td>
+          <td>${t.d}</td>
+          <td>${t.l}</td>
+          <td>${t.gf}</td>
+          <td>${t.ga}</td>
+          <td>${t.gd}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderHighlights(){
+      const box = document.getElementById("highlights");
+      if(!state.leagueTable.length){
+        box.innerHTML = "<p style='margin:0'>No simulation yet.</p>";
+        return;
+      }
+      const leader = state.leagueTable[0];
+      const bestAttack = state.leagueTable.slice().sort((a,b)=>b.gf-a.gf)[0];
+      const surprise = state.leagueTable.slice().sort((a,b)=>(b.pts + (85-b.rating)) - (a.pts + (85-a.rating)))[0];
+      box.innerHTML = `
+        <p style="margin-top:0"><strong>League Leader:</strong> ${escapeHtml(leader.name)} (${leader.pts} pts)</p>
+        <p><strong>Best Attack:</strong> ${escapeHtml(bestAttack.name)} (${bestAttack.gf} goals)</p>
+        <p><strong>Surprise Club:</strong> ${escapeHtml(surprise.name)} rated ${surprise.rating}</p>
+        <p style="margin-bottom:0"><strong>Qualified directly:</strong> ${state.leagueTable.slice(0,8).map(c=>escapeHtml(c.name)).join(", ")}</p>
+      `;
+    }
+
+    function renderScorers(){
+      const tbody = document.querySelector("#scorersTable tbody");
+      tbody.innerHTML = "";
+      state.scorers.forEach((s, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${i+1}</td><td><strong>${escapeHtml(s.player)}</strong></td><td>${escapeHtml(s.club)}</td><td>${s.goals}</td><td>${s.assists}</td><td>${s.points}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function tieCard(tie){
+      return `
+        <div class="match">
+          <div class="round-title">${escapeHtml(tie.label)}</div>
+          <div class="entry"><strong class="${tie.winner?.id===tie.teamA.id ? 'winner':''}">${escapeHtml(tie.teamA.name)}</strong><span>${tie.aggA}</span></div>
+          <div class="entry"><strong class="${tie.winner?.id===tie.teamB.id ? 'winner':''}">${escapeHtml(tie.teamB.name)}</strong><span>${tie.aggB}</span></div>
+          <div class="mini" style="margin-top:8px">${escapeHtml(tie.note || "Aggregate winner")}</div>
+        </div>
+      `;
+    }
+
+    function finalCard(final){
+      if(!final) return "";
+      return `
+        <div class="match">
+          <div class="round-title">Final</div>
+          <div class="entry"><strong class="${final.winner?.id===final.teamA.id ? 'winner':''}">${escapeHtml(final.teamA.name)}</strong><span>${final.match.homeGoals}</span></div>
+          <div class="entry"><strong class="${final.winner?.id===final.teamB.id ? 'winner':''}">${escapeHtml(final.teamB.name)}</strong><span>${final.match.awayGoals}</span></div>
+          <div class="mini" style="margin-top:8px">${escapeHtml(final.note || "Won in regular time")} • ${escapeHtml(final.host)}</div>
+        </div>
+      `;
+    }
+
+    function renderBracket(){
+      const left = document.getElementById("bracketLeft");
+      const right = document.getElementById("bracketRight");
+      left.innerHTML = "";
+      right.innerHTML = "";
+
+      if(!state.playoffRound.length && !state.roundOf16.length && !state.final){
+        left.innerHTML = `<div class="muteblock">No knockout simulation yet.</div>`;
+        right.innerHTML = `<div class="muteblock">Run the knockout after the league phase.</div>`;
+        updateFinalCards();
+        return;
+      }
+
+      // Left side uses first half of ties, right side uses second half
+      left.innerHTML = `
+        <div>
+          <div class="round-title">Playoff Round</div>
+          ${(state.playoffRound || []).slice(0,4).map(tieCard).join("")}
+        </div>
+        <div>
+          <div class="round-title">Round of 16</div>
+          ${(state.roundOf16 || []).slice(0,4).map(tieCard).join("")}
+        </div>
+        <div>
+          <div class="round-title">Quarterfinals</div>
+          ${(state.quarterfinals || []).slice(0,2).map(tieCard).join("")}
+        </div>
+        <div>
+          <div class="round-title">Semifinal</div>
+          ${(state.semifinals || []).slice(0,1).map(tieCard).join("")}
+        </div>
+      `;
+      right.innerHTML = `
+        <div>
+          <div class="round-title">Playoff Round</div>
+          ${(state.playoffRound || []).slice(4,8).map(tieCard).join("")}
+        </div>
+        <div>
+          <div class="round-title">Round of 16</div>
+          ${(state.roundOf16 || []).slice(4,8).map(tieCard).join("")}
+        </div>
+        <div>
+          <div class="round-title">Quarterfinals</div>
+          ${(state.quarterfinals || []).slice(2,4).map(tieCard).join("")}
+        </div>
+        <div>
+          <div class="round-title">Semifinal</div>
+          ${(state.semifinals || []).slice(1,2).map(tieCard).join("")}
+        </div>
+        ${state.final ? finalCard(state.final) : ""}
+      `;
+      updateFinalCards();
+    }
+
+    function updateAwards(){
+      const pot = state.playerOfTournament;
+      document.getElementById("potName").textContent = pot ? pot.player : "—";
+      document.getElementById("potClub").textContent = pot ? `${pot.club} • ${pot.points} points` : "—";
+
+      const upset = state.biggestUpset;
+      document.getElementById("upsetName").textContent = upset ? `${upset.awayGoals > upset.homeGoals ? upset.away : upset.home} def. ${upset.awayGoals > upset.homeGoals ? upset.home : upset.away}` : "—";
+      document.getElementById("upsetMeta").textContent = upset ? `${upset.homeGoals}-${upset.awayGoals} • rating swing ${upset.upsetScore}` : "—";
+
+      const champ = state.champion;
+      document.getElementById("championName").textContent = champ ? champ.name : "—";
+      document.getElementById("finalMeta").textContent = state.final ? `${state.final.host} • ${state.final.note || "Regular time"}` : "—";
+
+      const bestAttack = state.leagueTable.length ? state.leagueTable.slice().sort((a,b)=>b.gf-a.gf)[0] : null;
+      document.getElementById("bestAttack").textContent = bestAttack ? bestAttack.name : "—";
+      document.getElementById("bestAttackMeta").textContent = bestAttack ? `${bestAttack.gf} league-phase goals` : "—";
+    }
+
+    function updateFinalCards(){
+      const host = document.getElementById("hostInput").value.trim() || "London";
+      document.getElementById("finalHostCard").textContent = host;
+      document.getElementById("hostKpi").textContent = host;
+      document.getElementById("seasonKpi").textContent = document.getElementById("seasonInput").value || "2068";
+      if(state.final){
+        document.getElementById("finalWinnerCard").textContent = state.final.winner?.name || "—";
+        document.getElementById("finalScoreCard").textContent = `${state.final.teamA.name} ${state.final.match.homeGoals} - ${state.final.match.awayGoals} ${state.final.teamB.name}${state.final.note ? " • " + state.final.note : ""}`;
+      }else{
+        document.getElementById("finalWinnerCard").textContent = "—";
+        document.getElementById("finalScoreCard").textContent = "Simulate the knockout to populate the final.";
+      }
+      document.getElementById("championKpi").textContent = state.champion?.name || "—";
+      document.getElementById("scorerKpi").textContent = state.scorers?.[0] ? `${state.scorers[0].player} (${state.scorers[0].goals})` : "—";
+    }
+
+    function renderAll(){
+      renderLeagueTable();
+      renderHighlights();
+      renderScorers();
+      renderBracket();
+      updateAwards();
+      updateFinalCards();
+    }
+
+    function escapeHtml(s=""){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+    function escapeAttr(s=""){ return escapeHtml(s); }
+
+    document.getElementById("loadDefaultsBtn").addEventListener("click", loadDefaults);
+    document.getElementById("simulateLeagueBtn").addEventListener("click", simulateLeaguePhase);
+    document.getElementById("simulateKnockoutBtn").addEventListener("click", simulateFullKnockout);
+    document.getElementById("saveBtn").addEventListener("click", saveState);
+    document.getElementById("resetBtn").addEventListener("click", resetAll);
+    document.getElementById("addClubBtn").addEventListener("click", addClub);
+    document.getElementById("trimClubsBtn").addEventListener("click", trimClubs);
+    document.getElementById("hostInput").addEventListener("input", updateFinalCards);
+    document.getElementById("seasonInput").addEventListener("input", updateFinalCards);
+
+    loadSavedState();
+  </script>
+</body>
+</html>
